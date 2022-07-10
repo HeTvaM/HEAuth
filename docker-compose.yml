@@ -2,7 +2,7 @@ version: "3.0"
 
 services:
   envoy:
-    build: services
+    build: services/envoy
     ports:
       - "8001:8001"
       - "8100:8080"

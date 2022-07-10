@@ -1,0 +1,57 @@
+!ignore dynamic_sockets:
+- &admin {address: ${ADMIN_ADDRESS}, port_value: ${ADMIN_PORT}}
+- &envoy {address: ${ENVOY_ADDRESS}, port_value: ${ENVOY_PORT}}
+- &app {address: ${APP_ADDRESS}, port_value: ${APP_PORT}}
+
+admin:
+  address:
+    socket_address: *admin
+
+static_resources:
+  listeners:
+  - name: envoy_general
+    address:
+      socket_address: *envoy
+    filter_chains:
+    - filters:
+      - name: envoy.filters.network.http_connection_manager
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+          stat_prefix: envoy_general
+          access_log:
+          - name: envoy.access_loggers.stdout
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog
+          http_filters:
+          - name: envoy.filters.http.router
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+          route_config:
+            name: HEAuth
+            virtual_hosts:
+            - name: HEAuth
+              domains: ["*"]
+              routes:
+              - match:
+                  prefix: "/app/"
+                route:
+                  prefix_rewrite: "/"
+                  host_rewrite_literal: ${APP_ADDRESS}
+                  cluster: app
+                  timeout: ${APP_TIMEOUT}
+                  retry_policy:
+                    retry_on: 5xx
+                    num_retries: ${APP_RETRY_ATTEMPTS}
+
+  clusters:
+  - name: app
+    type: STRICT_DNS
+    lb_policy: ROUND_ROBIN
+    dns_lookup_family: V4_ONLY
+    load_assignment:
+      cluster_name: app
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address: *app
