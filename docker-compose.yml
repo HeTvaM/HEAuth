@@ -1,0 +1,11 @@
+version: "3.0"
+
+services:
+  envoy:
+    build: services
+    ports:
+      - "8001:8001"
+      - "8100:8080"
+    env_file:
+      - .env
+    restart: always
