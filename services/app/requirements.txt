@@ -1,2 +1,2 @@
 flask==2.1.2
-jinja2==3.0.1
+pydantic==1.9.1

@@ -9,3 +9,10 @@ services:
     env_file:
       - .env
     restart: always
+
+  app:
+    build: services/app
+    ports:
+      - "6200:6200"
+    command: python3 /app/flask/main.py
+    restart: always
