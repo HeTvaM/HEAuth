@@ -7,7 +7,7 @@ random.sample(population, k)
 
 import hashlib
 
-STR = os.getenv(unique_key)
+STR = os.getenv(UNIQUE_KEY)
 
 class BlockManager(BaseModel):
     hash_algo = hashlib.sha512()

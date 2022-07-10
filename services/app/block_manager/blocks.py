@@ -1,13 +1,14 @@
-from pydantic import BaseModel, Field
-from datetime import now
+from pydantic import BaseModel, Field, IPvAnyAddress
+from datetime import datetime, time
+from typing import List, Optional
 
 import hashlib
 
 class BaseBlock:
-    hash_algo=hashlib.sha256()
+    hash_algo: any = hashlib.sha256()
 
     @classmethod
-    def update(cls, prev_block: Block) -> bool:
+    def update(cls, prev_block) -> bool:
         try:
             self.hash_algo.update(prev_block.dict())
             cls.hash = hash_algo.hexdigest()
@@ -19,8 +20,8 @@ class BaseBlock:
 
 class BlockModel(BaseModel, BaseBlock):
     login: str = Field(min_length=3, max_length=40)
-    date: datetime = Field(le=now())
-    ip: IPvAnyAddress = Field(min_length=8, max_length=40)
+    date: datetime
+    ip: IPvAnyAddress
     status: str
 
 
@@ -36,7 +37,7 @@ class Block(BlockModel):
 
 
 class SuperBlockModel(BaseModel, BaseBlock):
-    data: list[BaseBlock]
+    data: any
 
 
 class SuperBlock(SuperBlockModel):
@@ -52,3 +53,7 @@ class SuperBlock(SuperBlockModel):
             blocks_dict.update(d)
 
         return block_dicts
+
+
+if __name__=="__main__":
+    pass
