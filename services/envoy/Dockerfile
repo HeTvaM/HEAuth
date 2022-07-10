@@ -1,8 +1,11 @@
 FROM envoyproxy/envoy:v1.22-latest
 
 RUN apt-get update && \
-    apt-get install gettext -y && \
-    apt-get install python3-pip -y
+    apt-get install -y --no-install-recommends \
+            gettext \
+            python3-pip \
+    ; \
+    apt-get clean
 
 WORKDIR /envoy
 COPY envoy.yaml /envoy
