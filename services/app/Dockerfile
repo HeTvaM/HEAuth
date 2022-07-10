@@ -1,6 +1,10 @@
 FROM python:3.10-slim-buster
 
 RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+            gcc  \
+            libc6-dev \
+    ; \
     apt-get clean
 
 EXPOSE 6200
@@ -10,5 +14,6 @@ COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /app
+RUN chmod 500 /app/entrypoint.sh
 
-RUN chmod 500 /app/flask/main.py
+ENTRYPOINT ["/app/entrypoint.sh"]

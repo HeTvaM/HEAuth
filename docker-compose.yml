@@ -7,12 +7,11 @@ services:
       - "8001:8001"
       - "8100:8080"
     env_file:
-      - .env
+      - services/envoy/.env
     restart: always
 
   app:
     build: services/app
     ports:
       - "6200:6200"
-    command: python3 /app/flask/main.py
     restart: always
