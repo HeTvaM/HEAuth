@@ -1,0 +1,11 @@
+### PYTHON TEMPLATE
+__pycache__/
+*.py[cod]
+*$py.class
+
+
+### TEXT TEMPLATE
+*log.txt
+
+### ENV TEMPLATE
+*.env
