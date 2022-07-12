@@ -14,4 +14,6 @@ services:
     build: services/app
     ports:
       - "6200:6200"
+    env_file:
+      - services/app/.env
     restart: always
