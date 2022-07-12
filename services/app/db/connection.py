@@ -16,8 +16,12 @@ class Connection:
     CLOSE_TABLE_NAME="close"
 
     def __init__(self, connection_data, db_name):
-        self._open_table = Table(connection_data, db_name, self.OPEN_TABLE_NAME)
-        self._close_table = Table(connection_data, db_name, self.CLOSE_TABLE_NAME)
+        self._open_table = Table(
+            connection_data, db_name, self.OPEN_TABLE_NAME
+        )
+        self._close_table = Table(
+            connection_data, db_name, self.CLOSE_TABLE_NAME
+        )
 
     def close_table_add(self, super_block):
         self._close_table.add_block(super_block)
@@ -41,4 +45,5 @@ class Table:
 
     @check_failure
     def get_last_block(self):
-        return self._table.find().sort('_id', -1)[0]
+        res = self._table.find().sort('_id', -1)
+        return res[0]
