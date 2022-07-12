@@ -8,6 +8,7 @@ random.sample(population, k)
 import hashlib
 
 STR = os.getenv(UNIQUE_KEY)
+LOG_STATUS=os.getenv(LOG_STATUS)
 
 class BlockManager(BaseModel):
     hash_algo = hashlib.sha512()
@@ -22,11 +23,24 @@ class BlockManager(BaseModel):
                 self._create_block(data, status)
             )
 
+    def new_action(self, token, action):
+        self.hash_table[token].append(action)
+
+    def last_request(self, data, token):
+        end_block = Block(status, *data)
+        #open_block = self.db.get_open(token)
+        #log_block = Block(log_status, )
+        #self._create_superblock(end_block, open_block, log_blog)
+
+
+    def _create_superblock(self, *blocks):
+
+
     def _create_block(self, data, status):
         block = Block(status, *data)
 
         # Block.update(block, db.prev())
-        # id = db.add(block)
+        # id = self.db.add(block)
 
         return block, id
 
@@ -38,6 +52,9 @@ class BlockManager(BaseModel):
         self.hash_algo.update(str)
         token = self.hash_algo.hexdigest()
 
-        self.hash_table[token] = id
+        self.hash_table[token] = [id]
 
         return token
+
+    def _check_token(self, token):
+        #return self.db.verify(token)
