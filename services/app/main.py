@@ -1,9 +1,11 @@
 import sys
 import os
 
-from Routes.urls import root
+from routes.urls import app
+from blockchain.block_manager import BlockManager
 
-BASEDIR = os.path.dirname(os.path.abspath(__file__))
+manager = BlockManager()
+manager.init_primary_blocks()
 
 if __name__=="__main__":
-    root.run(debug=True, port=6200, host="0.0.0.0")
+    app.run(debug=True, port=8000, host="0.0.0.0")

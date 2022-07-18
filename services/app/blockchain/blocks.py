@@ -20,8 +20,8 @@ class BaseBlock:
 
 
 class BlockModel(BaseModel, BaseBlock):
+    timestamp: datetime
     login: str = Field(min_length=3, max_length=40)
-    date: datetime
     ip: str #IPvAnyAddress
     status: str
     hash: str = None
@@ -30,7 +30,6 @@ class BlockModel(BaseModel, BaseBlock):
 class ActionBlockModel(BlockModel):
     data: dict
         
-
 
 class SuperBlockModel(BaseModel, BaseBlock):
     blocks: Any
@@ -78,7 +77,7 @@ if __name__=="__main__":
      
     Mblock = BlockModel(**variables)
     CloseBlock = BlockModel(**variables_close)
-    ActionBlock = ActionModel(**variables_action)
+    ActionBlock = ActionBlockModel(**variables_action)
     
     BaseBlock.update(Mblock, first_block)
     BaseBlock.update(CloseBlock, Mblock)

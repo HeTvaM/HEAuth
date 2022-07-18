@@ -1,6 +1,6 @@
 import unittest
 
-from Manager.blocks import *
+from blockchain.blocks import *
 
 class TestCreatingBlock(unittest.TestCase):
     def test_BlockModel(self):
