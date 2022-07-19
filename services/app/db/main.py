@@ -34,10 +34,10 @@ block_8 = {
 }
 
 conn = Connection('mongodb://localhost:27017/', 'blocks', 'open', 'super')
-# asyncio.run(conn.add_block('open', block_7))
-# asyncio.run(conn.add_block('open', block_1))
-# asyncio.run(conn.add_block('super', block_8))
-# print(asyncio.run(conn.verify(1000)))
+# print(asyncio.run(conn.add_block('open', block_7)))
+# print(asyncio.run(conn.add_block('super', block_1)))
+# asyncio.run(conn.add_block('open', block_8))
+# print(asyncio.run(conn.verify(9560649353045)))
 # print(asyncio.run(conn.verify(1001)))
 # a = asyncio.run(conn.search_by_id('open', '62d51cb7eda97ec74683b895'))
 # print(a)

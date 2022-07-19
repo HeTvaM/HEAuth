@@ -17,3 +17,9 @@ services:
     env_file:
       - services/app/.env
     restart: always
+
+  mongo_bd:
+    build: services/mongoDB
+    ports:
+      - "27017:27017"
+    restart: always
