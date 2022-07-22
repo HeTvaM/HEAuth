@@ -1,3 +1,4 @@
+from bson.objectid import ObjectId
 from pymongo import MongoClient
 from pymongo.errors import OperationFailure, PyMongoError
 
@@ -12,38 +13,39 @@ def check_failure(func):
 
 
 class Connection:
-    OPEN_TABLE_NAME="open"
-    CLOSE_TABLE_NAME="close"
+    OPEN_TABLE_NAME  = "open"
+    CLOSE_TABLE_NAME = "close"
 
     def __init__(self, connection_data, db_name):
-        self._open_table = Table(
-            connection_data, db_name, self.OPEN_TABLE_NAME
-        )
-        self._close_table = Table(
-            connection_data, db_name, self.CLOSE_TABLE_NAME
-        )
+        self._tables = {
+             self.OPEN_TABLE_NAME: MongoClient(
+                  connection_data
+             )[db_name][self.OPEN_TABLE_NAME]
 
-    def close_table_add(self, super_block):
-        self._close_table.add_block(super_block)
+             #self.CLOSE_TABLE_NAME: MongoClient(
+             #     connection_data
+             #)[db_name][self.CLOSE_TABLE_NAME]
+        }
 
+    async def add(self, table_name, block):
+        created_block = self._tables[table_name].insert_one(block)
+        return created_block.inserted_id
 
-class Table:
-    def __init__(self, connection_data, db_name, table_name):
-        self._table = MongoClient(connection_data)[db_name][table_name]
+    async def delete(self, table_name, block_id):
+        block = await self.search_by_id(table_name, block_id)
+        self._tables[table_name].delete_one(block)
 
-    @check_failure
-    def add_block(self, block):
-        self._table.insert_one(block)
+    async def show_table(self, table_name):
+        return self._tables[table_name].find()
 
-    @check_failure
-    def del_block(self, block):
-        self._table.delete_one(block)
+    async def get_last_block(self, table_name):
+        return self._tables[table_name].find().sort('_id', -1)[0]
 
-    @check_failure
-    def get_table(self):
-        return self._table.find()
+    async def search_by_id(self, table_name, block_id):
+        return self._tables[table_name].find_one(ObjectId(block_id))
 
-    @check_failure
-    def get_last_block(self):
-        res = self._table.find().sort('_id', -1)
-        return res[0]
+    async def verify(self, token):
+        block = self._tables['open'].find_one({'token': {"$eq": token}})
+        return not block is None
+
+    pass
