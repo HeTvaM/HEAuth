@@ -2,10 +2,10 @@ import sys
 import os
 
 from routes.urls import app
-from blockchain.block_manager import BlockManager
+from blockchain.main import CoreManager
 
-manager = BlockManager()
-manager.init_primary_blocks()
+manager = CoreManager()
+manager.setup_start()
 
 if __name__=="__main__":
     app.run(debug=True, port=6200, host="0.0.0.0")

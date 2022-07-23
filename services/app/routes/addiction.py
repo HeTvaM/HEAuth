@@ -4,27 +4,21 @@ import logging
 from datetime import datetime
 
 from blockchain.blocks import BlockModel
-from blockchain.block_manager import BlockManager
+from blockchain.main import CoreManager
 from tests.debug_loggger import Logger
 
-manager = BlockManager()
+manager = CoreManager()
 logger = Logger()
 
 def history_table_from(db):
-    logger.log(f"HISTORY \ DB: {db}")
-
     dicts = manager.get_table(db)
-
     return True
 
 
 def update_app(request):
-    logger.log("UPDATE")
-
-    try:
-        data = request.get_json()
-    except:
-        return
+    data = request.get_json(force=True)
+    if data is None:
+        return 3
 
     data["timestamp"] = datetime.now()
     token = data.pop("token", None)
@@ -39,7 +33,7 @@ def update_app(request):
 
 def validate(data: dict) -> bool:
     try:
-        block = BlockModel(*dict)
+        block = BlockModel(**dict)
     except:
         return False
 
@@ -47,9 +41,10 @@ def validate(data: dict) -> bool:
 
 
 def check_allocation(token, data: dict) -> bool:
-    logger.log(f"ALLOCATION \ \nDATA: {data}")
-
     if token:
-        return manager.is_token(token)
+        return manager.check_token(
+            token, data.get("action", "check_token")
+        )
 
-    return manager.new_request(token, data)
+    status = data.get("status")
+    return manager.define_action(token, status, data)
