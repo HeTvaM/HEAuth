@@ -19,7 +19,9 @@ services:
     restart: always
 
   mongo_bd:
-    build: services/mongoDB
+    build: services/postgresDB
+    vulumes:
+      - ~/postgres/data:/data/db
     ports:
       - "27017:27017"
     restart: always

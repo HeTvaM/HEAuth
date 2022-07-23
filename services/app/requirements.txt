@@ -1,5 +1,5 @@
 flask==2.1.2
 pydantic==1.9.1
 uwsgi==2.0.20
-pymongo==4.1.1
-bson==0.5.10
+psycopg2==2.9.3
+psycopg2-binary==2.9.3
