@@ -5,16 +5,21 @@ import asyncio
 from datetime import datetime
 from random import sample, randint
 
-from mongodb.connection import Connection
 from blocks import ActionBlockModel, BlockModel, SuperBlockModel, BaseBlock
 from tests.debug_loggger import Logger
 #from monogodb import connection
 
 logger = Logger()
 
-STR_KEY = os.getenv(UNIQUE_KEY, "qwerty")
-LOG_STATUS=os.getenv(LOG_STATUS, "User Action")
-DB_NAME = os.getenv(DB_NAME, "BLOCKS")
+try:
+    STR_KEY = os.getenv(UNIQUE_KEY)
+    LOG_STATUS=os.getenv(LOG_STATUS, "User Action")
+    DB_NAME = os.getenv(DB_NAME, "BLOCKS")
+except NameError:
+    STR_KEY="qwerty"
+    LOG_STATUS="User Action"
+    DB_NAME = "BLOCKS"
+
 
 def define_db_name(db_id:int) -> str:
     return "open" if db_id == 0 else "close"
@@ -33,7 +38,8 @@ def plugging(func):
 
 class BlockManager:
     hash_table = {}
-    db = Connection("mongodb://db:27017/", DB_NAME)
+    db = {}
+    #db = Connection("mongodb://db:27017/", DB_NAME)
     #print("DB", self.db)
     def __init__(self):
         self._last_block_id = None
@@ -59,10 +65,6 @@ class BlockManager:
         })
 
         first_block.hash = sample(STR_KEY, randint(0, len(STR_KEY)) )
-        id = asyncio.run(self.db.add(
-            define_db_name(0),
-            first_block.dict()
-        ))
 
     def get_table(self, db):
         dicts = asyncio.run(self.db.show_table(
@@ -85,7 +87,7 @@ class BlockManager:
         # log_block = Log(ActionBlogModel)
         # Superblock.update(superblock, self.db._open_table)
         # if self.db.close_table_add(superblock)
-        
+
     @plugging
     def _create_block(self, data):
         logger.log(f"CREATE BLOCK \ \nDATA: {data}")

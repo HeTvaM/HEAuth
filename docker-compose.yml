@@ -1,14 +1,14 @@
 version: "3.0"
 
 services:
-#  envoy:
-#    build: services/envoy
-#    ports:
-#      - "8001:8001"
-#      - "8100:8080"
-#    env_file:
-#      - services/envoy/.env
-#    restart: always
+  envoy:
+    build: services/envoy
+    ports:
+      - "8001:8001"
+      - "8100:8080"
+    env_file:
+      - services/envoy/.env
+    restart: always
 
   app:
     build: services/app
@@ -17,10 +17,4 @@ services:
     env_file:
       - services/app/.env
     restart: always
-
-  monogodb:
-    build: services/mongodb
-    container_name: db
-    ports:
-      - "27017:27017"
-    restart: always
+    

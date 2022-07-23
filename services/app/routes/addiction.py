@@ -10,12 +10,6 @@ from tests.debug_loggger import Logger
 manager = BlockManager()
 logger = Logger()
 
-def tokens():
-    print(manager.hash_table)
-
-    return True
-
-
 def history_table_from(db):
     logger.log(f"HISTORY \ DB: {db}")
 
@@ -27,9 +21,12 @@ def history_table_from(db):
 def update_app(request):
     logger.log("UPDATE")
 
-    data = request.get_json()
-    data["timestamp"] = datetime.now()
+    try:
+        data = request.get_json()
+    except:
+        return
 
+    data["timestamp"] = datetime.now()
     token = data.pop("token", None)
 
     return check_allocation(token, data)
