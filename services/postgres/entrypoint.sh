@@ -1,6 +1,4 @@
 #!/bin/sh
 set -e
 
-ls
-
-ls /postgres
+#python3 /postgres/setup.py

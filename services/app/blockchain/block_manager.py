@@ -5,8 +5,7 @@ from datetime import datetime
 from random import sample, randint
 
 from blocks import ActionBlockModel, BlockModel, SuperBlockModel, BaseBlock
-from tests.debug_loggger import Logger
-#from monogodb import connection
+from tools.debug_logger import Logger
 
 logger = Logger()
 
@@ -21,7 +20,7 @@ except NameError:
 
 
 def define_db_name(db_id:int) -> str:
-    return "open" if db_id == 0 else "close"
+    return "close" if db_id else "open"
 
 
 # Функция для создания блока затычки
@@ -50,21 +49,28 @@ class BlockManager:
             "status": "primary"
         })
 
-        first_block.hash = sample(STR_KEY, randint(0, len(STR_KEY)) )
+        first_block.hash = sample(
+            STR_KEY, randint(0, len(STR_KEY))
+        )
+        self.db.add(block)
 
     @plugging
     def create_block(self, data):
         block = BlockModel(**data)
         BaseBlock.update(
             block,
-            self.db.get_last_block(db=0)
+            self.db.get_last_block(
+                db = define_db_name(db=0)
+            )
         )
         id = self.db.add(block)
 
         return block, id
 
     def create_superblock(self, token, data):
-        open_block = self.db.get_last_block(db=1)
+        open_block = self.db.get_last_block(
+            db = define_db_name(db=1)
+        )
 
         close_block = BlockModel(**data)
         log_block = ActionBlockModel(data=self.hash_table[token])

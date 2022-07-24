@@ -2,8 +2,8 @@
 Example DB for test features
 """
 
-from tests.debug_loggger import Logger
-from tests.patterns import MetaSingleton
+from tools.debug_logger import Logger
+from tools.patterns import MetaSingleton
 
 logger = Logger()
 

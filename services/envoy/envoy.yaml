@@ -40,7 +40,7 @@ static_resources:
                   cluster: app
                   timeout: ${APP_TIMEOUT}
                   retry_policy:
-                    retry_on: 5xx
+                    retry_on: 4xx, 5xx
                     num_retries: ${APP_RETRY_ATTEMPTS}
 
   clusters:

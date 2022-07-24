@@ -4,8 +4,15 @@ import hashlib
 from datetime import datetime
 from random import sample, randint
 
-from blocks import ActionBlockModel, BlockModel, SuperBlockModel, BaseBlock
-from tests.debug_loggger import Logger
+from blocks import (
+    ActionBlockModel,
+    BlockModel,
+    SuperBlockModel,
+    BaseBlock
+)
+
+from tools.debug_logger import Logger
+from db.main import Connection
 
 
 try:
@@ -20,10 +27,12 @@ except NameError:
 
 class CoreManager:
     hash_table = {}
-    db = {}
-    block_manager = BlockManager(db=db)
     #db = Connection("mongodb://db:27017/", DB_NAME)
     #print("DB", self.db
+
+    def __init__(self):
+        self.db = Connection()
+        self.block_manager = BlockManager(db=db)
 
     # Создаёт новый блок или суперблок
     def define_action(self, token, status, data):
@@ -37,14 +46,14 @@ class CoreManager:
     def setup_start(self):
         self.block_manager.init_primary_block()
 
-    def get_table(self, db):
-        return self.db.show_table(db=db)
-
     def check_token(self, token, action):
         if self._find_token(token):
             return self._log_action(token, action)
 
         return 2
+
+    def get_table(self, db):
+        return self.db.get_table(db=db)
 
     def _create_token(self, block, id):
         key = f"{str(block.dict())}{id} \

@@ -1,23 +1,29 @@
 version: "3.0"
 
 services:
-  envoy:
-    build: services/envoy
-    ports:
-      - "8001:8001"
-      - "8100:8080"
-    env_file:
-      - services/envoy/.env
-    restart: always
+#  envoy:
+#    build: services/envoy
+#    ports:
+#      - "8001:8001"
+#      - "8100:8080"
+#    env_file:
+#      - services/envoy/.env
+#    restart: always
 
   postgres:
-    build: services/postgres
+    container_name: "postgress"
+    image: postgres:13.3
+    enviroment:
+      POSTGRES_DB: "general"
+      POSTGRES_USER: "admin"
+      POSTGRES_PASSWORD: "admin"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
     ports:
-      - "27017:27017"
+      - "5432:5432"
     volumes:
-      - ./postgres/data:/postgres/data/db
-    restart: always
-    
+      - postgres/data:/postgres/data/db
+      - postgres/entrypoint.sh:/docker-entrypoint-initdb.d
+
   app:
     build: services/app
     ports:
