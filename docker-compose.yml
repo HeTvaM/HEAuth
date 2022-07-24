@@ -10,6 +10,14 @@ services:
       - services/envoy/.env
     restart: always
 
+  postgres:
+    build: services/postgres
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./postgres/data:/postgres/data/db
+    restart: always
+    
   app:
     build: services/app
     ports:
@@ -17,4 +25,3 @@ services:
     env_file:
       - services/app/.env
     restart: always
-    
