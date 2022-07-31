@@ -1,25 +1,17 @@
 version: "3.0"
 
 services:
-#  envoy:
-#    build: services/envoy
-#    ports:
-#      - "8001:8001"
-#      - "8100:8080"
-#    env_file:
-#      - services/envoy/.env
-#    restart: always
-<<<<<<< HEAD
-#
-#  app:
-#    build: services/app
-#    ports:
-#      - "6200:6200"
-#    env_file:
-#      - services/app/.env
-#    restart: always
+  envoy:
+    build: services/envoy
+    ports:
+      - "8001:8001"
+      - "8100:8080"
+    env_file:
+      - services/envoy/.env
+    restart: always
 
   postgres:
+    container_name: postgres
     image: postgres:13.3
     ports:
       - "5432:5432"
@@ -37,25 +29,6 @@ services:
   pgadmin:
     user: root
     image: dpage/pgadmin4:5.7
-=======
-
-  postgres:
-    container_name: "postgress"
-    image: postgres:13.3
-    enviroment:
-      POSTGRES_DB: "general"
-      POSTGRES_USER: "admin"
-      POSTGRES_PASSWORD: "admin"
-      PGDATA: "/var/lib/postgresql/data/pgdata"
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres/data:/postgres/data/db
-      - postgres/entrypoint.sh:/docker-entrypoint-initdb.d
-
-  app:
-    build: services/app
->>>>>>> 080323757c65fcaa15550fece6a4380d92120e1d
     ports:
       - "5050:80"
     environment:
@@ -67,6 +40,18 @@ services:
     networks:
       - postgres
     restart: unless-stopped
+    
+  app:
+    build: services/app
+    ports:
+      - "6200:6200"
+    env_file:
+      - services/app/.env
+    networks:
+      - postgres
+    restart: always
+
+
 
 networks:
   postgres:

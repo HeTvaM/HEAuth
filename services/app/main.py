@@ -2,11 +2,8 @@ import sys
 import os
 
 from routes.urls import app
-<<<<<<< HEAD
-=======
-from tools.debug_logger import Logger
->>>>>>> 080323757c65fcaa15550fece6a4380d92120e1d
 from blockchain.main import CoreManager
+from tools.debug_logger import Logger
 
 logger = Logger()
 logger.log(os.environ)

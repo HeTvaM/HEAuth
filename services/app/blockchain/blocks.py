@@ -20,7 +20,7 @@ class BaseBlock:
 
 
 class BlockModel(BaseModel, BaseBlock):
-    timestamp: datetime
+    timestamp: str #datetime
     login: str = Field(min_length=3, max_length=40)
     ip: str #IPvAnyAddress
     status: str

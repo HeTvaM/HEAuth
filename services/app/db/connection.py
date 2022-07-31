@@ -1,14 +1,15 @@
 import psycopg2
 
-from tools.debug_logger import Logger
+from tools.patterns import MetaSingleton
 
-from query import {
+from .query import (
     SELECT_ALL,
     OPEN_INSERT_BLOCK,
     SEARCH_BY_ID,
     DELETE_BLOCK
-}
+)
 
+from tools.debug_logger import Logger
 from tools.config import (
     DB_NAME,
     DB_USER,
@@ -19,7 +20,7 @@ from tools.config import (
 
 logger = Logger()
 
-class Connection:
+class Connection(metaclass = MetaSingleton):
     def __init__(self):
         conn = psycopg2.connect(
             database=DB_NAME,
@@ -29,18 +30,21 @@ class Connection:
             port=DB_PORT
         )
         conn.autocommit = True
-        self.__cursor = conn.cursor().execute("SELECT version();")
+        self.__cursor = conn.cursor()
+        self.__cursor.execute("SELECT version();")
         record = self.__cursor.fetchone()
 
         logger.log(f"Вы подключены к - {record}")
 
     def add(self, data):
+        logger.log(f"ADD DB DATA: {data}")
+
         self.__cursor.execute(
-            open_table_insert_query.format(
+            OPEN_INSERT_BLOCK.format(
                 table_name="open",
-                status=data["status"]
+                status=data["status"],
                 login=data["login"],
-                date=data["date"],
+                timestamp=data["timestamp"],
                 ip=data["ip"]
             )
         )
@@ -49,27 +53,27 @@ class Connection:
 
     def delete_block(self, id, table_name="open"):
         self.__cursor.execute(
-            delete_block_query.format(
+            DELETE_BLOCK.format(
                 table_name=table_name, id=id
             )
         )
         return True
 
-    def get_table(self, table_name="open")):
+    def get_table(self, table_name="open"):
         self.__cursor.execute(
-            select_all_query.format(table_name=table_name)
+            SELECT_ALL.format(table_name=table_name)
         )
         return self.__cursor.fetcall()
 
-    def get_last_block(self, table_name="open")):
+    def get_last_block(self, table_name="open"):
         self.__cursor.execute(
-            select_all_query.format(table_name=table_name)
+            SELECT_ALL.format(table_name=table_name)
         )
         return self.__cursor.fetchone()[0]
 
-    def search_by_id(self, id, table_name="open")):
+    def search_by_id(self, id, table_name="open"):
         self.__cursor.execute(
-             search_by_id_query.format(
+             SEARCH_BY_ID.format(
                  table_name=table_name, id=id
             )
         )

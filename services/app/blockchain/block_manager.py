@@ -1,9 +1,8 @@
 import os
 
-from datetime import datetime
+from datetime import datetime, timezone
 from random import sample, randint
 
-<<<<<<< HEAD
 from blocks import (
     ActionBlockModel,
     BlockModel,
@@ -13,10 +12,7 @@ from blocks import (
 
 from tools.debug_logger import Logger
 from tools.config import UNIQUE_KEY
-=======
-from blocks import ActionBlockModel, BlockModel, SuperBlockModel, BaseBlock
-from tools.debug_logger import Logger
->>>>>>> 080323757c65fcaa15550fece6a4380d92120e1d
+from db.connection import Connection
 
 
 logger = Logger()
@@ -40,24 +36,25 @@ def plugging(func):
 
 
 class BlockManager:
-    def __init__(self, db):
-        self.db = db
+    def __init__(self):
+        self.db = Connection()
         self._last_block_id = None
 
     def init_primary_blocks(self):
         logger.log("INIT PRIMARY BLOCK")
 
+        time = datetime.now(timezone.utc)
+
         first_block = BlockModel(**{
-            "timestamp": datetime.now(),
+            "timestamp": "test",#time.strftime("%Y-%m-%d %H:%M:%S"),
             "login": "admin",
-            "ip": "0.0.0.0",
-            "status": "primary"
+            "ip": "test",
+            "status": "init"
         })
 
         first_block.hash = sample(
-            STR_KEY, randint(0, len(STR_KEY))
+            UNIQUE_KEY, randint(0, len(UNIQUE_KEY))
         )
-        self.db.add(block)
 
         logger.log(f"PRIMARY BLOCK END, RESULT - {self.db.add(first_block.dict())}")
 
@@ -68,16 +65,10 @@ class BlockManager:
         block = BlockModel(**data)
         BaseBlock.update(
             block,
-<<<<<<< HEAD
             self.db.get_last_block()
         )
         id = self.db.add(
             block.dict()
-=======
-            self.db.get_last_block(
-                db = define_db_name(db=0)
-            )
->>>>>>> 080323757c65fcaa15550fece6a4380d92120e1d
         )
 
         logger.log(f"CREATE BLOCK END, RESULT - {id}")
@@ -85,13 +76,7 @@ class BlockManager:
         return block, id
 
     def create_superblock(self, token, data):
-<<<<<<< HEAD
         open_block = self.db.get_last_block()
-=======
-        open_block = self.db.get_last_block(
-            db = define_db_name(db=1)
-        )
->>>>>>> 080323757c65fcaa15550fece6a4380d92120e1d
 
         close_block = BlockModel(**data)
         log_block = ActionBlockModel(data=self.hash_table[token])

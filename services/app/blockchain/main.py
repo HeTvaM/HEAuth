@@ -4,47 +4,19 @@ import hashlib
 from datetime import datetime
 from random import sample, randint
 
-<<<<<<< HEAD
+from .block_manager import BlockManager
 from db.connection import Connection
 from tools.debug_logger import Logger
 from tools.config import UNIQUE_KEY, CREATE_STATUS
-=======
-from blocks import (
-    ActionBlockModel,
-    BlockModel,
-    SuperBlockModel,
-    BaseBlock
-)
-
-from tools.debug_logger import Logger
-from db.main import Connection
-
-
-try:
-    STR_KEY = os.getenv(UNIQUE_KEY)
-    DB_NAME = os.getenv(DB)
-    CREATE_STATUS=os.getenv(CREATE)
-except NameError:
-    STR_KEY="qwerty"
-    DB_NAME = "BLOCKS"
-    CREATE_STATUS="open"
->>>>>>> 080323757c65fcaa15550fece6a4380d92120e1d
 
 logger = Logger()
 
 class CoreManager:
     hash_table = {}
-<<<<<<< HEAD
-    db = Connection()
-    block_manager = BlockManager(db=db)
-=======
->>>>>>> 080323757c65fcaa15550fece6a4380d92120e1d
-    #db = Connection("mongodb://db:27017/", DB_NAME)
-    #print("DB", self.db
 
     def __init__(self):
         self.db = Connection()
-        self.block_manager = BlockManager(db=db)
+        self.block_manager = BlockManager()
 
     # Создаёт новый блок или суперблок
     def define_action(self, token, status, data):
@@ -56,7 +28,7 @@ class CoreManager:
         return self.block_manager.create_superblock(token, data)
 
     def setup_start(self):
-        self.block_manager.init_primary_block()
+        self.block_manager.init_primary_blocks()
 
     def check_token(self, token, action):
         if self._find_token(token):
@@ -69,7 +41,7 @@ class CoreManager:
 
     def _create_token(self, block, id):
         key = f"{str(block.dict())}{id} \
-                {sample(STR_KEY, randint(0, len(STR_KEY)))}".encode()
+                {sample(UNIQUE_KEY, randint(0, len(UNIQUE_KEY)))}".encode()
 
         hash_algo = hashlib.sha512()
         hash_algo.update(key)
