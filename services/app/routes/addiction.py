@@ -5,7 +5,7 @@ from datetime import datetime
 
 from blockchain.blocks import BlockModel
 from blockchain.main import CoreManager
-from tests.debug_loggger import Logger
+from tools.debug_logger import Logger
 
 manager = CoreManager()
 logger = Logger()
