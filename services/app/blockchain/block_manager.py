@@ -1,23 +1,20 @@
 import os
-import hashlib
 
 from datetime import datetime
 from random import sample, randint
 
-from blocks import ActionBlockModel, BlockModel, SuperBlockModel, BaseBlock
-from tests.debug_loggger import Logger
-#from monogodb import connection
+from blocks import (
+    ActionBlockModel,
+    BlockModel,
+    SuperBlockModel,
+    BaseBlock
+)
+
+from tools.debug_logger import Logger
+from tools.config import UNIQUE_KEY
+
 
 logger = Logger()
-
-try:
-    STR_KEY = os.getenv(UNIQUE_KEY)
-    LOG_STATUS=os.getenv(LOG_STATUS, "User Action")
-    DB_NAME = os.getenv(DB_NAME, "BLOCKS")
-except NameError:
-    STR_KEY="qwerty"
-    LOG_STATUS="User Action"
-    DB_NAME = "BLOCKS"
 
 
 def define_db_name(db_id:int) -> str:
@@ -43,6 +40,8 @@ class BlockManager:
         self._last_block_id = None
 
     def init_primary_blocks(self):
+        logger.log("INIT PRIMARY BLOCK")
+
         first_block = BlockModel(**{
             "timestamp": datetime.now(),
             "login": "admin",
@@ -52,19 +51,27 @@ class BlockManager:
 
         first_block.hash = sample(STR_KEY, randint(0, len(STR_KEY)) )
 
+        logger.log(f"PRIMARY BLOCK END, RESULT - {self.db.add(first_block.dict())}")
+
     @plugging
     def create_block(self, data):
+        logger.log(f"CREATE BLOCK")
+
         block = BlockModel(**data)
         BaseBlock.update(
             block,
-            self.db.get_last_block(db=0)
+            self.db.get_last_block()
         )
-        id = self.db.add(block)
+        id = self.db.add(
+            block.dict()
+        )
+
+        logger.log(f"CREATE BLOCK END, RESULT - {id}")
 
         return block, id
 
     def create_superblock(self, token, data):
-        open_block = self.db.get_last_block(db=1)
+        open_block = self.db.get_last_block()
 
         close_block = BlockModel(**data)
         log_block = ActionBlockModel(data=self.hash_table[token])
@@ -82,7 +89,9 @@ class BlockManager:
         })
 
         BaseBlock.update(last_block, block)
-        self.last_block_id = self.db.add(last_block)
+        self.last_block_id = self.db.add(
+            last_block.dict()
+        )
 
     def _del_last_block(self):
         try:

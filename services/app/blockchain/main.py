@@ -4,23 +4,15 @@ import hashlib
 from datetime import datetime
 from random import sample, randint
 
-from blocks import ActionBlockModel, BlockModel, SuperBlockModel, BaseBlock
-from tests.debug_loggger import Logger
+from db.connection import Connection
+from tools.debug_logger import Logger
+from tools.config import UNIQUE_KEY, CREATE_STATUS
 
-
-try:
-    STR_KEY = os.getenv(UNIQUE_KEY)
-    DB_NAME = os.getenv(DB)
-    CREATE_STATUS=os.getenv(CREATE)
-except NameError:
-    STR_KEY="qwerty"
-    DB_NAME = "BLOCKS"
-    CREATE_STATUS="open"
-
+logger = Logger()
 
 class CoreManager:
     hash_table = {}
-    db = {}
+    db = Connection()
     block_manager = BlockManager(db=db)
     #db = Connection("mongodb://db:27017/", DB_NAME)
     #print("DB", self.db

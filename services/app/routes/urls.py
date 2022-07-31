@@ -1,13 +1,10 @@
 import os
 
-from datetime import datetime
 from flask import Flask, request
 from werkzeug.wrappers.response import Response
-from enum import Enum
 
-from tests.debug_loggger import Logger
+from tools.debug_logger import Logger
 from routes.addiction import history_table_from, update_app
-from blockchain.block_manager import BlockManager
 
 BASEDIR = os.path.dirname(os.path.abspath(__file__))
 logger = Logger()
