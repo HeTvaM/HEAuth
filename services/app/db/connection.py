@@ -3,6 +3,8 @@ import psycopg2
 from tools.patterns import MetaSingleton
 
 from .query import (
+    CREATE_DB_TABLE,
+    GET_LAST_ID,
     SELECT_ALL,
     OPEN_INSERT_BLOCK,
     SEARCH_BY_ID,
@@ -34,19 +36,28 @@ class Connection(metaclass = MetaSingleton):
         self.__cursor.execute("SELECT version();")
         record = self.__cursor.fetchone()
 
+        try:
+            self.__cursor.execute(CREATE_DB_TABLE)
+        except psycopg2.errors.DuplicateTable:
+            pass
+
         logger.log(f"Вы подключены к - {record}")
 
     def add(self, data):
         logger.log(f"ADD DB DATA: {data}")
 
         self.__cursor.execute(
-            OPEN_INSERT_BLOCK.format(
-                table_name="open",
-                status=data["status"],
-                login=data["login"],
-                timestamp=data["timestamp"],
-                ip=data["ip"]
+            OPEN_INSERT_BLOCK, (
+                table_name = "open",
+                data["login"],
+                data["timestamp"],
+                data["ip"],
+                data["status"]
             )
+        )
+
+        self.__cursor.execute(
+            GET_LAST_ID
         )
 
         return self.__cursor.fetchone()[0]

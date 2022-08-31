@@ -6,7 +6,6 @@ from blockchain.main import CoreManager
 from tools.debug_logger import Logger
 
 logger = Logger()
-logger.log(os.environ)
 
 manager = CoreManager()
 manager.setup_start()

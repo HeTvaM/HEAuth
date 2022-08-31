@@ -11,7 +11,11 @@ from blocks import (
 )
 
 from tools.debug_logger import Logger
-from tools.config import UNIQUE_KEY
+from tools.config import (
+    UNIQUE_KEY,
+    SYSTEM_LOGIN,
+    SYSTEM_IP
+)
 from db.connection import Connection
 
 
@@ -46,10 +50,10 @@ class BlockManager:
         time = datetime.now(timezone.utc)
 
         first_block = BlockModel(**{
-            "timestamp": "test",#time.strftime("%Y-%m-%d %H:%M:%S"),
-            "login": "admin",
-            "ip": "test",
-            "status": "init"
+            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "login": SYSTEM_LOGIN,
+            "ip": SYSTEM_IP,
+            "status": "primary"
         })
 
         first_block.hash = sample(
@@ -88,9 +92,9 @@ class BlockManager:
     def _create_last_block(self, block):
         last_block = BlockModel(**{
             "timestamp": datetime.now(),
-            "login": "admin",
-            "ip": "0.0.0.0",
-            "status": "primary"
+            "login": SYSTEM_LOGIN,
+            "ip": SYSTEM_IP,
+            "status": "plug"
         })
 
         BaseBlock.update(last_block, block)
