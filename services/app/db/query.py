@@ -1,0 +1,6 @@
+CREATE_DB_TABLE = "CREATE TABLE open (id serial PRIMARY KEY, login character(40), date timestamp without time zone, ip inet, status character(40));"
+SELECT_ALL = "SELECT * FROM {table_name}"
+OPEN_INSERT_BLOCK = "INSERT INTO {table_name} (login, date, ip, status) VALUES (%s, %s, %s, %s)"
+SEARCH_BY_ID = "SELECT * FROM {table_name} WHERE id = {id}"
+DELETE_BLOCK = "DELETE FROM {table_name} WHERE id = {id}"
+GET_LAST_ID = "SELECT * FROM open WHERE id = (SELECT MAX(id) FROM open)"

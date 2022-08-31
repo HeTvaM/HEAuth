@@ -10,8 +10,49 @@ services:
       - services/envoy/.env
     restart: always
 
+  postgres:
+    container_name: postgres
+    image: postgres:13.3
+    ports:
+      - "5432:5432"
+    volumes:
+      - .:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: "db"
+      POSTGRES_USER: "admin"
+      POSTGRES_PASSWORD: "admin"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    networks:
+      - postgres
+    restart: always
+
+  pgadmin:
+    user: root
+    image: dpage/pgadmin4:5.7
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "admin@test.com"
+      PGADMIN_DEFAULT_PASSWORD: "admin"
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - ./pgadmin:/var/lib/pgadmin
+    networks:
+      - postgres
+    restart: unless-stopped
+    
   app:
     build: services/app
     ports:
       - "6200:6200"
+    env_file:
+      - services/app/.env
+    networks:
+      - postgres
     restart: always
+
+
+
+networks:
+  postgres:
+    driver: bridge

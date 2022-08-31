@@ -9,3 +9,7 @@ __pycache__/
 
 ### ENV TEMPLATE
 *.env
+
+### DIR TEMPLATE
+pgadmin/
+pgdata/
