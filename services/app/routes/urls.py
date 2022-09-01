@@ -17,6 +17,7 @@ app = Flask(__name__)
 ExceptionMessages = {
     200: ("Access allowed", 200),
     401: ("The system did not allow access", 401),
+    444: ("Logging Error!", 401),
     455: ("Wrong Token", 401),
     456: ("POST request required header Content-type: json or request data is None", 401),
     555: ("Unvalid data, system can't create block", 401),
@@ -25,10 +26,15 @@ ExceptionMessages = {
 
 
 def handler(type):
-    message, status = ExceptionMessages[type]
+    try:
+        message, status = ExceptionMessages[type]
+    except:
+        message, status = type
+
+    logger.log(message, status)
 
     return Response(
-        message,
+        str(message),
         status=status
     )
 
@@ -48,12 +54,9 @@ def output(db):
         history_table_from()
     )
 
-
 @app.route("/restart", methods=['GET'])
 def restart():
     pass
-
-    #block_manager.restart(db=True, table=True)
 
 @app.route("/reset/<int:close>", methods=['GET'])
 def reset(close=0):

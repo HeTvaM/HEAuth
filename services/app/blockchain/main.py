@@ -31,7 +31,7 @@ class CoreManager:
 
     def check_token(self, token, action):
         if self._find_token(token):
-            return self._log_action(token, action)
+            return 200 if self._log_action(token, action) else 444
 
         return 455
 
@@ -56,7 +56,7 @@ class CoreManager:
         token = hash_algo.hexdigest()
         self.hash_table[token] = [id]
 
-        return 200
+        return 200, token
 
     def _find_token(self, token):
         return not self.hash_table.get(token) is None

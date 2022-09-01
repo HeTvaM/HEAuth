@@ -31,31 +31,29 @@ def update_app(request):
     if data is None:
         return 456
 
-    data["timestamp"] = datetime.now()
-    token = data.pop("token", None)
+    return check_allocation(data)
 
-    return check_allocation(token, data)
-
-    #if validate(data):
-    #    return check_allocation(status, token, data)
-    #
-    #return False
 
 
 def validate(data: dict) -> bool:
     try:
-        block = BlockModel(**dict)
+        block = BlockModel(**data)
     except:
         return False
 
     return True
 
 
-def check_allocation(token, data: dict) -> bool:
+def check_allocation(data):
+    token = data.pop("token", None)
     if token:
         return manager.check_token(
             token, data.get("action", "check_token")
         )
 
-    status = data.get("status")
-    return manager.define_action(token, status, data)
+    data["timestamp"] = datetime.now()
+    if validate(data):
+        status = data.get("status")
+        return manager.define_action(token, status, data)
+
+    return 555
