@@ -9,7 +9,12 @@ class BaseBlock:
     @staticmethod
     def update(cls, prev_block) -> bool:
         hash_algo = hashlib.sha256()
-        data = str(prev_block.dict()).encode()
+        print(prev_block)
+        try:
+            data = str(prev_block.dict()).encode()
+        except AttributeError:
+            info = [str(obj) for obj in prev_block]
+            data = "".join(info).encode()
         try:
             hash_algo.update(data)
             cls.hash = hash_algo.hexdigest()
@@ -20,9 +25,9 @@ class BaseBlock:
 
 
 class BlockModel(BaseModel, BaseBlock):
-    timestamp: str #datetime
+    timestamp: datetime
     login: str = Field(min_length=3, max_length=40)
-    ip: str #IPvAnyAddress
+    ip: str = Field(min_length=7, max_length=20)
     status: str
     hash: str = None
 

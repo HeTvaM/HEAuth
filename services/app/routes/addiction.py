@@ -10,15 +10,22 @@ from tools.debug_logger import Logger
 manager = CoreManager()
 logger = Logger()
 
-def history_table_from(db):
-    dicts = manager.get_table(db)
-    return True
+def history_table_from():
+    dicts = manager.get_table()
+    for obj in dicts:
+        logger.log(obj)
+    return 200
 
 
 def update_app(request):
-    data = request.get_json(force=True)
+    try:
+        data = request.get_json()
+    except:
+        logger.log_exception("Request Data Error!")
+        return 456
+
     if data is None:
-        return 3
+        return 456
 
     data["timestamp"] = datetime.now()
     token = data.pop("token", None)

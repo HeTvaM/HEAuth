@@ -47,10 +47,8 @@ class BlockManager:
     def init_primary_blocks(self):
         logger.log("INIT PRIMARY BLOCK")
 
-        time = datetime.now(timezone.utc)
-
         first_block = BlockModel(**{
-            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "timestamp": datetime.now(),
             "login": SYSTEM_LOGIN,
             "ip": SYSTEM_IP,
             "status": "primary"

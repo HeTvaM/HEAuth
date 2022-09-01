@@ -48,7 +48,6 @@ class Connection(metaclass = MetaSingleton):
 
         self.__cursor.execute(
             OPEN_INSERT_BLOCK, (
-                table_name = "open",
                 data["login"],
                 data["timestamp"],
                 data["ip"],
@@ -62,25 +61,19 @@ class Connection(metaclass = MetaSingleton):
 
         return self.__cursor.fetchone()[0]
 
-    def delete_block(self, id, table_name="open"):
+    def delete_block(self, id):
         self.__cursor.execute(
-            DELETE_BLOCK.format(
-                table_name=table_name, id=id
-            )
+            DELETE_BLOCK, (id)
         )
         return True
 
-    def get_table(self, table_name="open"):
-        self.__cursor.execute(
-            SELECT_ALL.format(table_name=table_name)
-        )
-        return self.__cursor.fetcall()
+    def get_table(self):
+        self.__cursor.execute(SELECT_ALL)
+        return self.__cursor.fetchall()
 
     def get_last_block(self, table_name="open"):
-        self.__cursor.execute(
-            SELECT_ALL.format(table_name=table_name)
-        )
-        return self.__cursor.fetchone()[0]
+        self.__cursor.execute(GET_LAST_ID)
+        return self.__cursor.fetchone()
 
     def search_by_id(self, id, table_name="open"):
         self.__cursor.execute(

@@ -18,7 +18,6 @@ class CoreManager:
         self.db = Connection()
         self.block_manager = BlockManager()
 
-    # Создаёт новый блок или суперблок
     def define_action(self, token, status, data):
         if CREATE_STATUS == status:
             return self._create_token(
@@ -36,8 +35,8 @@ class CoreManager:
 
         return 2
 
-    def get_table(self, db):
-        return self.db.get_table(db=db)
+    def get_table(self):
+        return self.db.get_table()
 
     def _create_token(self, block, id):
         key = f"{str(block.dict())}{id} \
@@ -48,7 +47,7 @@ class CoreManager:
         token = hash_algo.hexdigest()
         self.hash_table[token] = [id]
 
-        return token
+        return 200
 
     def _find_token(self, token):
         return not self.hash_table.get(token) is None

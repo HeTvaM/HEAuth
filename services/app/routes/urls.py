@@ -14,7 +14,7 @@ ExceptionMessages = {
     200: ("Access allowed", 200),
     401: ("The system did not allow access", 401),
     455: ("Wrong Token", 401),
-    456: ("POST request required header Content\type: json or request data is None", 401),
+    456: ("POST request required header Content-type: json or request data is None", 401),
     555: ("Unvalid data, system can't create block", 401),
     503: ("Error in database, Critical lvl. Contact with devops or support", 503)
 }
@@ -31,6 +31,8 @@ def handler(type):
 
 @app.route("/input", methods=['POST'])
 def input():
+    logger.log("Input")
+
     return handler(
         update_app(request)
     )
@@ -39,8 +41,8 @@ def input():
 @app.route("/output/<int:db>", methods=['GET'])
 def output(db):
     return handler(
-        200
-    ) #history_table_from(db)
+        history_table_from()
+    )
 
 
 @app.route("/restart", methods=['GET'])
@@ -51,4 +53,4 @@ def restart():
 
 @app.route("/health", methods=['GET'])
 def check_health():
-    return Responce("", status=200)
+    return Response("", status=200)

@@ -15,6 +15,4 @@ If not, you need to leave the postgress database inside the container.
 Envoy is used to improve fault tolerance.
 If you use prometheus + grafana on your project, you can set up a monitoring system and an alert system for envoy.
 
-Translated with www.DeepL.com/Translator (free version)
-
-## Alpha SOON
+## Alpha in 2 weeks
