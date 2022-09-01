@@ -8,7 +8,9 @@ from .query import (
     SELECT_ALL,
     OPEN_INSERT_BLOCK,
     SEARCH_BY_ID,
-    DELETE_BLOCK
+    DELETE_BLOCK,
+    DELETE_ALL,
+    RESET_PRIMARY_KEY
 )
 
 from tools.debug_logger import Logger
@@ -24,15 +26,15 @@ logger = Logger()
 
 class Connection(metaclass = MetaSingleton):
     def __init__(self):
-        conn = psycopg2.connect(
+        self.conn = psycopg2.connect(
             database=DB_NAME,
             user=DB_USER,
             password=DB_PASSWORD,
             host=DB_HOST,
             port=DB_PORT
         )
-        conn.autocommit = True
-        self.__cursor = conn.cursor()
+        self.conn.autocommit = True
+        self.__cursor = self.conn.cursor()
         self.__cursor.execute("SELECT version();")
         record = self.__cursor.fetchone()
 
@@ -82,3 +84,12 @@ class Connection(metaclass = MetaSingleton):
             )
         )
         return self.__cursor.fetchone()
+
+    def reset(self):
+        self.__cursor.execute(DELETE_ALL)
+        self.__cursor.execute(RESET_PRIMARY_KEY)
+        return True
+
+    def close_connection(self):
+        self.__cursor.close()
+        self.conn.close()

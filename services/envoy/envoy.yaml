@@ -1,7 +1,7 @@
 !ignore dynamic_sockets:
 - &admin {address: ${ADMIN_ADDRESS}, port_value: ${ADMIN_PORT}}
 - &envoy {address: ${ENVOY_ADDRESS}, port_value: ${ENVOY_PORT}}
-- &app_cl {address: app, port_value: 6200}
+- &app_cl {address: ${APP_ADDRESS}, port_value: ${APP_PORT}}
 
 admin:
   address:
@@ -53,15 +53,15 @@ static_resources:
           max_connections: 100
           max_pending_requests: 25
           max_retries: 25
-#    health_checks:
-#    - timeout: 60s
-#      interval: 30s
-#      unhealthy_interval: 60s
-#      healthy_threshold: 3
-#      unhealthy_threshold: 5
-#      event_log_path: /dev/stdout
-#      http_health_check:
-#        path: "/health"
+    health_checks:
+    - timeout: 60s
+      interval: 30s
+      unhealthy_interval: 60s
+      healthy_threshold: 3
+      unhealthy_threshold: 5
+      event_log_path: /dev/stdout
+      http_health_check:
+        path: "/health"
     load_assignment:
       cluster_name: app
       endpoints:

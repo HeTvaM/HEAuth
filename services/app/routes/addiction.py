@@ -10,6 +10,10 @@ from tools.debug_logger import Logger
 manager = CoreManager()
 logger = Logger()
 
+def reset_connection(key):
+    return manager.reset(key)
+
+
 def history_table_from():
     dicts = manager.get_table()
     for obj in dicts:

@@ -33,7 +33,16 @@ class CoreManager:
         if self._find_token(token):
             return self._log_action(token, action)
 
-        return 2
+        return 455
+
+    def reset(self, key=0):
+        self.db.reset()
+        if key:
+            self.db.close_connection()
+        else:
+            self.block_manager.init_primary_blocks()
+
+        return 200
 
     def get_table(self):
         return self.db.get_table()

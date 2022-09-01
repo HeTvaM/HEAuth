@@ -4,7 +4,11 @@ from flask import Flask, request
 from werkzeug.wrappers.response import Response
 
 from tools.debug_logger import Logger
-from routes.addiction import history_table_from, update_app
+from routes.addiction import (
+    reset_connection,
+    history_table_from,
+    update_app
+)
 
 BASEDIR = os.path.dirname(os.path.abspath(__file__))
 logger = Logger()
@@ -50,6 +54,12 @@ def restart():
     pass
 
     #block_manager.restart(db=True, table=True)
+
+@app.route("/reset/<int:close>", methods=['GET'])
+def reset(close=0):
+    return handler(
+        reset_connection(close)
+    )
 
 @app.route("/health", methods=['GET'])
 def check_health():
