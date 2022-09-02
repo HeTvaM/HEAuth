@@ -36,12 +36,12 @@ class CoreManager:
                 *self.block_manager.create_block(data)
             )
 
-        return self.block_manager.create_superblock(token, data)
+        return self._create_close_block(data, status, token)
 
     def setup_start(self):
         self.block_manager.init_primary_blocks()
 
-    def check_token(self, token, action):
+    def add_user_action(self, token, action):
         if self._find_token(token):
             return 200 if self._log_action(token, action) else 444
 
@@ -63,11 +63,34 @@ class CoreManager:
         token = make_hash(block, id)
         self.hash_table[token] = [id]
 
+        logger.log(f"HASH TABLE - {self.hash_table}")
+
         return 200, token
+
+    def _create_close_block(self, data, status, token):
+        actions = self._del_token(token)
+        if actions == 455:
+            return actions
+        else:
+            self.block_manager.create_close_block(
+                data, status, actions
+            )
+            return 200
 
     def _find_token(self, token):
         return not self.hash_table.get(token) is None
 
+    def _del_token(self, token):
+        if self._find_token(token):
+            return self.hash_table.pop(token)
+
+        return 455
+
     def _log_action(self, token, action):
         time = datetime.now()
-        return not self.hash_table[token].append({time:action}) is None
+        try:
+            self.hash_table[token].append({time:action})
+        except:
+            return False
+
+        return True

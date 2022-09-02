@@ -62,7 +62,7 @@ class BlockManager:
             UNIQUE_KEY, randint(0, len(UNIQUE_KEY))
         )
 
-        logger.log(f"PRIMARY BLOCK END, RESULT - {self.db.add(primary.dict())}")
+        logger.log(f"PRIMARY BLOCK END, RESULT - {self.db.add(primary_block.dict())}")
 
     @plugging
     def create_block(self, data):
@@ -81,15 +81,8 @@ class BlockManager:
 
         return block, id
 
-    def create_superblock(self, token, data):
-        open_block = self.db.get_last_block()
-
-        close_block = BlockModel(**data)
-        log_block = ActionBlockModel(data=self.hash_table[token])
-        superblock = SuperBlockModel(
-            blocks=[open_block, log_block, close_block]
-        )
-
+    def create_close_block(self, data, status, actions):
+        logger.log("TOKEN IS CLOSE")
 
     def _create_last_block(self, block):
         last_block = use_template_block("plug")

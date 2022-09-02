@@ -41,14 +41,22 @@ def validate(data: dict) -> bool:
 
 def check_allocation(data):
     token = data.pop("token", None)
-    if token:
-        return manager.check_token(
-            token, data.get("action", "check_token")
+    action = data.pop("action", None)
+
+    logger.log(f"TOKEN - {token}\nAction - {action}")
+
+    if action:
+        return manager.add_user_action(
+            token, action
         )
 
     data["timestamp"] = datetime.now()
     if validate(data):
-        status = data.get("status")
+        try:
+            status = data["status"]
+        except AttributeError:
+            return 410
+
         return manager.define_action(token, status, data)
 
     return 555
