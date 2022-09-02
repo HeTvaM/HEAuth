@@ -18,15 +18,24 @@ from tools.config import (
 )
 from db.connection import Connection
 
-
 logger = Logger()
 
+TEMPLATE_BLOCK = BlockModel(**{
+    "timestamp": datetime.now(),
+    "login": SYSTEM_LOGIN,
+    "ip": SYSTEM_IP,
+    "status": "primary"
+})
 
-def define_db_name(db_id:int) -> str:
-    return "close" if db_id else "open"
+def use_template_block(status):
+    block = TEMPLATE_BLOCK
+
+    block.timestamp = datetime.now()
+    block.status = status
+
+    return block
 
 
-# Функция для создания блока затычки
 def plugging(func):
     def wrapper(*args, **kwargs):
         cls = args[0]
@@ -47,18 +56,13 @@ class BlockManager:
     def init_primary_blocks(self):
         logger.log("INIT PRIMARY BLOCK")
 
-        first_block = BlockModel(**{
-            "timestamp": datetime.now(),
-            "login": SYSTEM_LOGIN,
-            "ip": SYSTEM_IP,
-            "status": "primary"
-        })
+        primary_block = use_template_block("primary")
 
-        first_block.hash = sample(
+        primary_block.hash = sample(
             UNIQUE_KEY, randint(0, len(UNIQUE_KEY))
         )
 
-        logger.log(f"PRIMARY BLOCK END, RESULT - {self.db.add(first_block.dict())}")
+        logger.log(f"PRIMARY BLOCK END, RESULT - {self.db.add(primary_block.dict())}")
 
     @plugging
     def create_block(self, data):
@@ -77,23 +81,11 @@ class BlockManager:
 
         return block, id
 
-    def create_superblock(self, token, data):
-        open_block = self.db.get_last_block()
-
-        close_block = BlockModel(**data)
-        log_block = ActionBlockModel(data=self.hash_table[token])
-        superblock = SuperBlockModel(
-            blocks=[open_block, log_block, close_block]
-        )
-
+    def create_close_block(self, data, status, actions):
+        logger.log("TOKEN IS CLOSE")
 
     def _create_last_block(self, block):
-        last_block = BlockModel(**{
-            "timestamp": datetime.now(),
-            "login": SYSTEM_LOGIN,
-            "ip": SYSTEM_IP,
-            "status": "plug"
-        })
+        last_block = use_template_block("plug")
 
         BaseBlock.update(last_block, block)
         self.last_block_id = self.db.add(
