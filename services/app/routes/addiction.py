@@ -13,13 +13,11 @@ logger = Logger()
 def reset_connection(key):
     return manager.reset(key)
 
-
 def history_table_from():
     dicts = manager.get_table()
     for obj in dicts:
         logger.log(obj)
     return 200
-
 
 def update_app(request):
     try:
@@ -33,8 +31,6 @@ def update_app(request):
 
     return check_allocation(data)
 
-
-
 def validate(data: dict) -> bool:
     try:
         block = BlockModel(**data)
@@ -42,7 +38,6 @@ def validate(data: dict) -> bool:
         return False
 
     return True
-
 
 def check_allocation(data):
     token = data.pop("token", None)

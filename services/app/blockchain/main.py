@@ -11,6 +11,18 @@ from tools.config import UNIQUE_KEY, CREATE_STATUS
 
 logger = Logger()
 
+def make_hash(block, id:int):
+    hash_algo = hashlib.sha512()
+
+    key = f"{str(block.dict())}{id}"
+    key += f"{sample(UNIQUE_KEY, randint(0, len(UNIQUE_KEY)))}"
+
+    hash_algo.update(
+        key.encode()
+    )
+
+    return hash_algo.hexdigest()
+
 class CoreManager:
     hash_table = {}
 
@@ -48,12 +60,7 @@ class CoreManager:
         return self.db.get_table()
 
     def _create_token(self, block, id):
-        key = f"{str(block.dict())}{id} \
-                {sample(UNIQUE_KEY, randint(0, len(UNIQUE_KEY)))}".encode()
-
-        hash_algo = hashlib.sha512()
-        hash_algo.update(key)
-        token = hash_algo.hexdigest()
+        token = make_hash(block, id)
         self.hash_table[token] = [id]
 
         return 200, token

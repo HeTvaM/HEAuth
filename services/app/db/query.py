@@ -7,8 +7,9 @@ CREATE_DB_TABLE = """CREATE TABLE open
                    status character(20));"""
 
 #___SELECT___
+VERSION = "SELECT version();"
 SELECT_ALL = "SELECT * FROM open"
-SEARCH_BY_ID = "SELECT * FROM open WHERE id = {id}"
+SEARCH_BY_ID = "SELECT * FROM open WHERE id = %s"
 GET_LAST_ID = "SELECT * FROM open WHERE id = (SELECT MAX(id) FROM open)"
 
 #___DELETE____

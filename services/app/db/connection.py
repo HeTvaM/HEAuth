@@ -3,6 +3,7 @@ import psycopg2
 from tools.patterns import MetaSingleton
 
 from .query import (
+    VERSION,
     CREATE_DB_TABLE,
     GET_LAST_ID,
     SELECT_ALL,
@@ -35,7 +36,7 @@ class Connection(metaclass = MetaSingleton):
         )
         self.conn.autocommit = True
         self.__cursor = self.conn.cursor()
-        self.__cursor.execute("SELECT version();")
+        self.__cursor.execute(VERSION)
         record = self.__cursor.fetchone()
 
         try:
@@ -73,15 +74,13 @@ class Connection(metaclass = MetaSingleton):
         self.__cursor.execute(SELECT_ALL)
         return self.__cursor.fetchall()
 
-    def get_last_block(self, table_name="open"):
+    def get_last_block(self):
         self.__cursor.execute(GET_LAST_ID)
         return self.__cursor.fetchone()
 
-    def search_by_id(self, id, table_name="open"):
+    def search_by_id(self, id):
         self.__cursor.execute(
-             SEARCH_BY_ID.format(
-                 table_name=table_name, id=id
-            )
+             SEARCH_BY_ID, (id)
         )
         return self.__cursor.fetchone()
 

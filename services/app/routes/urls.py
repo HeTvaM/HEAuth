@@ -31,13 +31,10 @@ def handler(type):
     except:
         message, status = type
 
-    logger.log(message, status)
-
     return Response(
         str(message),
         status=status
     )
-
 
 @app.route("/input", methods=['POST'])
 def input():
@@ -46,7 +43,6 @@ def input():
     return handler(
         update_app(request)
     )
-
 
 @app.route("/output/<int:db>", methods=['GET'])
 def output(db):
