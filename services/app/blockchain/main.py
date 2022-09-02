@@ -82,7 +82,10 @@ class CoreManager:
 
     def _del_token(self, token):
         if self._find_token(token):
-            return self.hash_table.pop(token)
+            actions = self.hash_table.pop(token)
+            self.db.delete_block(actions[0])
+
+            return actions[1:]
 
         return 455
 
