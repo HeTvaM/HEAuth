@@ -47,6 +47,15 @@ def plugging(func):
         return block, id
     return wrapper
 
+def check_block_data(open_data, close_data):
+    open_block = TEMPLATE_BLOCK
+    open_block.login = open_data[1].replace(" ", "")
+    open_block.ip = open_data[3]
+
+    close_block = BlockModel(**close_data)
+
+    return open_block == close_block
+
 
 class BlockManager:
     def __init__(self):

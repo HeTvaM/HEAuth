@@ -4,7 +4,7 @@ import hashlib
 from datetime import datetime
 from random import sample, randint
 
-from .block_manager import BlockManager
+from .block_manager import BlockManager, check_block_data
 from db.connection import Connection
 from tools.debug_logger import Logger
 from tools.config import (
@@ -27,16 +27,13 @@ def make_hash(block, id:int):
 
     return hash_algo.hexdigest()
 
-def check_block_data(data, block_data):
-    open_block = BlockModel(**data)
-    close_block == BlockModel(**block_data)
+def check_input_data(open_data, close_data):
+    return check_block_data(open_data, close_data)
 
-    if open_block == close_block:
-        return True
-#    else:
-#        firing_message()
-#        return False
-
+    #    if not check_block_data(open_data, close_data):
+    #        return firing_message(message="Close data is false")
+    #
+    #    return True
 
 class CoreManager:
     hash_table = {}
@@ -77,7 +74,8 @@ class CoreManager:
         return self.db.get_table()
 
     def _create_token(self, block, id):
-        token = make_hash(block, id)
+        #token = make_hash(block, id)
+        token = "111"
         self.hash_table[token] = [id]
 
         logger.log(f"HASH TABLE - {self.hash_table}")
@@ -92,13 +90,13 @@ class CoreManager:
             id = token_data[0]
             actions = token_data[1:]
 
-            token_block = self.db.search_by_id(id)
+            token_block_data = self.db.search_by_id(id)
 
-            logger.log(f"ID - {id}, actions - {actions}")
-            logger.log(f"ID DATA - {token_block}")
+            if not check_block_data():
+                return 555
 
             self.block_manager.create_close_block(
-                data, token_block, status, actions
+                data, status, actions
             )
             return 200
 
