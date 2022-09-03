@@ -11,6 +11,7 @@ from blocks import (
 )
 
 from tools.debug_logger import Logger
+from tools.helpers import get_table_name
 from tools.config import (
     UNIQUE_KEY,
     SYSTEM_LOGIN,
@@ -27,14 +28,20 @@ TEMPLATE_BLOCK = BlockModel(**{
     "status": "primary"
 })
 
-def use_template_block(status):
-    block = TEMPLATE_BLOCK
+TEMPLATE_SUPERBLOCK = SuperBlockModel(**{
+    "blocks": "primary"
+})
 
-    block.timestamp = datetime.now()
-    block.status = status
+def use_template_block(template, status):
+    if template:
+        block = TEMPLATE_BLOCK
+        block.timestamp = datetime.now()
+        block.status = status
+        return block
 
+    block = TEMPLATE_SUPERBLOCK
+    block.blocks = status
     return block
-
 
 def plugging(func):
     def wrapper(*args, **kwargs):
@@ -47,15 +54,6 @@ def plugging(func):
         return block, id
     return wrapper
 
-def check_block_data(open_data, close_data):
-    open_block = TEMPLATE_BLOCK
-    open_block.login = open_data[1].replace(" ", "")
-    open_block.ip = open_data[3]
-
-    close_block = BlockModel(**close_data)
-
-    return open_block == close_block
-
 
 class BlockManager:
     def __init__(self):
@@ -65,13 +63,15 @@ class BlockManager:
     def init_primary_blocks(self):
         logger.log("INIT PRIMARY BLOCK")
 
-        primary_block = use_template_block("primary")
+        for i in range(2):
+            primary_block = use_template_block(i, "primary")
+            primary_block.hash = make_hash(i, 1)
+            self.db.add(
+                get_table_name(i),
+                primary_block.dict()
+            )
 
-        primary_block.hash = sample(
-            UNIQUE_KEY, randint(0, len(UNIQUE_KEY))
-        )
-
-        logger.log(f"PRIMARY BLOCK END, RESULT - {self.db.add(primary_block.dict())}")
+        logger.log("PRIMARY BLOCK END")
 
     @plugging
     def create_block(self, data):
@@ -90,8 +90,24 @@ class BlockManager:
 
         return block, str(id)
 
-    def create_close_block(self, data, status, actions):
-        logger.log("TOKEN IS CLOSE")
+    @plugging
+    def create_close_block(self, open_data, close_data, status, actions):
+        logger.log("CREATE CLOSE BLOCK")
+
+        open_block = BlockModel(**open_data)
+        close_block = BlockModel(**close_data)
+        action_block = ActionBlockModel(**{
+            "timestamp": datetime.now(),
+            "login": open_block.login,
+            "ip": open_block.ip,
+            "status": "activity",
+            "data":actions
+        })
+
+        superblock = SuperBlockModel(**{
+            blocks: [open_block, action_block, close_block]
+        })
+
 
     def _create_last_block(self, block):
         last_block = use_template_block("plug")

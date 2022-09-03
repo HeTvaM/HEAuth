@@ -27,14 +27,10 @@ ExceptionMessages = {
 
 
 def handler(type):
-    logger.log(f"TYPE - {type}")
-
     try:
         message, status = ExceptionMessages[type]
     except:
         status, message = type
-
-    logger.log(f"HANDLER OUTPUT - {message} = {status}")
 
     return Response(
         str(message),
@@ -49,10 +45,10 @@ def input():
         update_app(request)
     )
 
-@app.route("/output/<int:db>", methods=['GET'])
-def output(db):
+@app.route("/output/<int:table_id>", methods=['GET'])
+def output(table_id):
     return handler(
-        history_table_from()
+        history_table_from(table_id)
     )
 
 @app.route("/restart", methods=['GET'])

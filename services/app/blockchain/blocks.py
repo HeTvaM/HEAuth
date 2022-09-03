@@ -8,8 +8,7 @@ from typing import List, Optional, Any
 class BaseBlock:
     @staticmethod
     def update(cls, prev_block) -> bool:
-        hash_algo = hashlib.sha256()
-        print(prev_block)
+        hash_algo = hashlib.sha512()
         try:
             data = str(prev_block.dict()).encode()
         except AttributeError:
@@ -48,7 +47,8 @@ class SuperBlockModel(BaseModel, BaseBlock):
 
     def dict(self) -> dict:
         blocks_dict = {}
-        dicts = [block.dict() for block in self.blocks]
+        try:
+            dicts = [block.dict() for block in self.blocks]
         for d in dicts:
             blocks_dict.update(d)
 

@@ -2,17 +2,7 @@ import psycopg2
 
 from tools.patterns import MetaSingleton
 
-from .query import (
-    VERSION,
-    CREATE_DB_TABLE,
-    GET_LAST_ID,
-    SELECT_ALL,
-    OPEN_INSERT_BLOCK,
-    SEARCH_BY_ID,
-    DELETE_BLOCK,
-    DELETE_ALL,
-    RESET_PRIMARY_KEY
-)
+from .query import *
 
 from tools.debug_logger import Logger
 from tools.config import (
@@ -39,18 +29,24 @@ class Connection(metaclass = MetaSingleton):
         self.__cursor.execute(VERSION)
         record = self.__cursor.fetchone()
 
-        try:
-            self.__cursor.execute(CREATE_DB_TABLE)
-        except psycopg2.errors.DuplicateTable:
-            pass
+        self.create_tables(0)
+        self.create_tables(1)
 
         logger.log(f"Вы подключены к - {record}")
 
-    def add(self, data):
-        logger.log(f"ADD DB DATA: {data}")
+    def create_tables(self, tablename):
+        try:
+            if tablename:
+                self.__cursor.execute(CREATE_DB_TABLE)
+            self.__cursor.execute(CREATE_DB_CLOSE_TABLE)
+        except psycopg2.errors.DuplicateTable:
+            pass
+
+    def add_open(self, data):
+        logger.log(f"ADD DB DATA: {data}, {table}")
 
         self.__cursor.execute(
-            OPEN_INSERT_BLOCK, (
+            OPEN_INSERT_BLOCK.format(
                 data["login"],
                 data["timestamp"],
                 data["ip"],
@@ -59,34 +55,59 @@ class Connection(metaclass = MetaSingleton):
         )
 
         self.__cursor.execute(
-            GET_LAST_ID
+            GET_LAST_ID.format("open")
         )
 
         return self.__cursor.fetchone()[0]
 
-    def delete_block(self, id):
+    def add_close(self, data):
         self.__cursor.execute(
-            DELETE_BLOCK, (id)
+            CLOSE_INSERT_BLOCK.format(
+                data["login"],
+                data["ip"],
+                data["open_data"],
+                data["close_data"],
+                data["actions"]
+            )
+        )
+
+        self.__cursor.execute(
+            GET_LAST_ID.format("close")
+        )
+
+        return self.__cursor.fetchone()[0]
+
+    def delete_block(self, table, id):
+        self.__cursor.execute(
+            DELETE_BLOCK.format(table,id)
         )
         return True
 
-    def get_table(self):
-        self.__cursor.execute(SELECT_ALL)
+    def get_table(self, table):
+        self.__cursor.execute(
+            SELECT_ALL.format(table)
+        )
         return self.__cursor.fetchall()
 
-    def get_last_block(self):
-        self.__cursor.execute(GET_LAST_ID)
-        return self.__cursor.fetchone()
-
-    def search_by_id(self, id):
+    def get_last_block(self, table):
         self.__cursor.execute(
-             SEARCH_BY_ID, (id)
+            GET_LAST_ID.format(table)
         )
         return self.__cursor.fetchone()
 
-    def reset(self):
-        self.__cursor.execute(DELETE_ALL)
-        self.__cursor.execute(RESET_PRIMARY_KEY)
+    def search_by_id(self, table, id):
+        self.__cursor.execute(
+             SEARCH_BY_ID.format(table, id)
+        )
+        return self.__cursor.fetchone()
+
+    def reset(self, table):
+        self.__cursor.execute(
+            DELETE_ALL.format(table)
+        )
+        self.__cursor.execute(
+            RESET_PRIMARY_KEY.format(table)
+        )
         return True
 
     def close_connection(self):
