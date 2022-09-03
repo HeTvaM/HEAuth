@@ -17,7 +17,7 @@ app = Flask(__name__)
 ExceptionMessages = {
     200: ("Access allowed", 200),
     401: ("The system did not allow access", 401),
-    410: ("The status is None", 401),
+    410: ("The status is None \ The status is wrong", 401),
     444: ("Logging Error!", 401),
     455: ("Wrong Token", 401),
     456: ("POST request required header Content-type: json or request data is None", 401),
@@ -27,14 +27,10 @@ ExceptionMessages = {
 
 
 def handler(type):
-    logger.log(f"TYPE - {type}")
-
     try:
         message, status = ExceptionMessages[type]
     except:
         status, message = type
-
-    logger.log(f"HANDLER OUTPUT - {message} = {status}")
 
     return Response(
         str(message),
@@ -49,10 +45,10 @@ def input():
         update_app(request)
     )
 
-@app.route("/output/<int:db>", methods=['GET'])
-def output(db):
+@app.route("/output/<int:table_id>", methods=['GET'])
+def output(table_id):
     return handler(
-        history_table_from()
+        history_table_from(table_id)
     )
 
 @app.route("/restart", methods=['GET'])

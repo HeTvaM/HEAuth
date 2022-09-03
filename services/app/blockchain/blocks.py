@@ -1,6 +1,6 @@
 import hashlib
 
-from pydantic import BaseModel, Field, IPvAnyAddress
+from pydantic import BaseModel, Field, IPvAnyAddres
 from datetime import datetime, time
 from typing import List, Optional, Any
 
@@ -8,8 +8,7 @@ from typing import List, Optional, Any
 class BaseBlock:
     @staticmethod
     def update(cls, prev_block) -> bool:
-        hash_algo = hashlib.sha256()
-        print(prev_block)
+        hash_algo = hashlib.sha512()
         try:
             data = str(prev_block.dict()).encode()
         except AttributeError:
@@ -27,23 +26,26 @@ class BaseBlock:
 class BlockModel(BaseModel, BaseBlock):
     timestamp: datetime
     login: str = Field(min_length=3, max_length=40)
-    ip: str = Field(min_length=7, max_length=20)
+    #ip: str = Field(min_length=7, max_length=20)
+    ip: IPvAnyAddres
     status: str
     hash: str = None
+
+    def __eq__(self, other):
+        count = self.login == other.login
+        count += self.ip == other.ip
+
+        return count == 2
 
 
 class ActionBlockModel(BlockModel):
     data: dict
 
 
-class SuperBlockModel(BaseModel, BaseBlock):
-    blocks: Any
+class CloseBlockModel(BaseModel, BaseBlock):
+    login: str = Field(min_length=3, max_length=40)
+    ip: str = Field(min_length=7, max_length=20)
+    open_date: datetime
+    close_date: datetime
+    activity: dict
     hash: str = None
-
-    def dict(self) -> dict:
-        blocks_dict = {}
-        dicts = [block.dict() for block in self.blocks]
-        for d in dicts:
-            blocks_dict.update(d)
-
-        return blocks_dict

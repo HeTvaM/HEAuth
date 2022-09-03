@@ -11,6 +11,7 @@ from blocks import (
 )
 
 from tools.debug_logger import Logger
+from tools.helpers import get_table_name
 from tools.config import (
     UNIQUE_KEY,
     SYSTEM_LOGIN,
@@ -27,14 +28,20 @@ TEMPLATE_BLOCK = BlockModel(**{
     "status": "primary"
 })
 
-def use_template_block(status):
-    block = TEMPLATE_BLOCK
+TEMPLATE_SUPERBLOCK = SuperBlockModel(**{
+    "blocks": "primary"
+})
 
-    block.timestamp = datetime.now()
-    block.status = status
+def use_template_block(template, status):
+    if template:
+        block = TEMPLATE_BLOCK
+        block.timestamp = datetime.now()
+        block.status = status
+        return block
 
+    block = TEMPLATE_SUPERBLOCK
+    block.blocks = status
     return block
-
 
 def plugging(func):
     def wrapper(*args, **kwargs):
@@ -56,33 +63,35 @@ class BlockManager:
     def init_primary_blocks(self):
         logger.log("INIT PRIMARY BLOCK")
 
-        primary_block = use_template_block("primary")
-
-        primary_block.hash = sample(
-            UNIQUE_KEY, randint(0, len(UNIQUE_KEY))
-        )
-
-        logger.log(f"PRIMARY BLOCK END, RESULT - {self.db.add(primary_block.dict())}")
+        for i in range(2):
+            primary_block = use_template_block(i, "primary")
+            primary_block.hash = make_hash(i, 1)
+            self.db.add(
+                get_table_name(i),
+                primary_block.dict()
+            )
 
     @plugging
-    def create_block(self, data):
-        logger.log(f"CREATE BLOCK")
+    def create_block(self, data, table_id):
+        logger.log(f"CREATE BLOCK - {table_id}")
 
-        block = BlockModel(**data)
+        if table_id:
+            block = BlockModel(*data)
+        else:
+            block = CloseBlockModel(**data)
+
+        tablename = get_table_name(table_id)
         BaseBlock.update(
             block,
-            self.db.get_last_block()
+            self.db.get_last_block(
+                tablename
+            )
         )
         id = self.db.add(
-            block.dict()
+            tablename, block.dict()
         )
 
-        logger.log(f"CREATE BLOCK END, RESULT - {id}")
-
-        return block, id
-
-    def create_close_block(self, data, status, actions):
-        logger.log("TOKEN IS CLOSE")
+        return block, str(id)
 
     def _create_last_block(self, block):
         last_block = use_template_block("plug")

@@ -10,16 +10,16 @@ from tools.debug_logger import Logger
 manager = CoreManager()
 logger = Logger()
 
-def reset_connection(key):
+def reset_connection(key) -> int:
     return manager.reset(key)
 
-def history_table_from():
-    dicts = manager.get_table()
+def history_table_from(table_id:int) -> int:
+    dicts = manager.get_table(table_id)
     for obj in dicts:
         logger.log(obj)
     return 200
 
-def update_app(request):
+def update_app(request) -> int:
     try:
         data = request.get_json()
     except:
@@ -39,7 +39,7 @@ def validate(data: dict) -> bool:
 
     return True
 
-def check_allocation(data):
+def check_allocation(data) -> int:
     token = data.pop("token", None)
     action = data.pop("action", None)
 
