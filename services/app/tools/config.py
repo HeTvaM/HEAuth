@@ -3,6 +3,7 @@ import os
 
 UNIQUE_KEY = os.environ["UNIQUE_KEY"]
 CREATE_STATUS=os.environ["CREATE_STATUS"]
+CLOSE_STATUS=os.environ["CLOSE_STATUS"]
 
 DB_NAME = os.environ["DB_NAME"]
 DB_USER = os.environ["DB_USER"]

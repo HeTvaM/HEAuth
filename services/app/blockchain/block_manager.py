@@ -79,7 +79,7 @@ class BlockManager:
 
         logger.log(f"CREATE BLOCK END, RESULT - {id}")
 
-        return block, id
+        return block, str(id)
 
     def create_close_block(self, data, status, actions):
         logger.log("TOKEN IS CLOSE")

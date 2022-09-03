@@ -31,6 +31,12 @@ class BlockModel(BaseModel, BaseBlock):
     status: str
     hash: str = None
 
+    def __eq__(self, other):
+        count = self.login == other.login
+        count += self.ip == other.ip
+
+        return count == 2
+
 
 class ActionBlockModel(BlockModel):
     data: dict
