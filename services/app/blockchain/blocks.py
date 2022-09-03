@@ -1,6 +1,6 @@
 import hashlib
 
-from pydantic import BaseModel, Field, IPvAnyAddress
+from pydantic import BaseModel, Field, IPvAnyAddres
 from datetime import datetime, time
 from typing import List, Optional, Any
 
@@ -26,7 +26,8 @@ class BaseBlock:
 class BlockModel(BaseModel, BaseBlock):
     timestamp: datetime
     login: str = Field(min_length=3, max_length=40)
-    ip: str = Field(min_length=7, max_length=20)
+    #ip: str = Field(min_length=7, max_length=20)
+    ip: IPvAnyAddres
     status: str
     hash: str = None
 
@@ -41,15 +42,10 @@ class ActionBlockModel(BlockModel):
     data: dict
 
 
-class SuperBlockModel(BaseModel, BaseBlock):
-    blocks: Any
+class CloseBlockModel(BaseModel, BaseBlock):
+    login: str = Field(min_length=3, max_length=40)
+    ip: str = Field(min_length=7, max_length=20)
+    open_date: datetime
+    close_date: datetime
+    activity: dict
     hash: str = None
-
-    def dict(self) -> dict:
-        blocks_dict = {}
-        try:
-            dicts = [block.dict() for block in self.blocks]
-        for d in dicts:
-            blocks_dict.update(d)
-
-        return blocks_dict

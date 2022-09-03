@@ -71,43 +71,27 @@ class BlockManager:
                 primary_block.dict()
             )
 
-        logger.log("PRIMARY BLOCK END")
-
     @plugging
-    def create_block(self, data):
-        logger.log(f"CREATE BLOCK")
+    def create_block(self, data, table_id):
+        logger.log(f"CREATE BLOCK - {table_id}")
 
-        block = BlockModel(**data)
+        if table_id:
+            block = BlockModel(*data)
+        else:
+            block = CloseBlockModel(**data)
+
+        tablename = get_table_name(table_id)
         BaseBlock.update(
             block,
-            self.db.get_last_block()
+            self.db.get_last_block(
+                tablename
+            )
         )
         id = self.db.add(
-            block.dict()
+            tablename, block.dict()
         )
 
-        logger.log(f"CREATE BLOCK END, RESULT - {id}")
-
         return block, str(id)
-
-    @plugging
-    def create_close_block(self, open_data, close_data, status, actions):
-        logger.log("CREATE CLOSE BLOCK")
-
-        open_block = BlockModel(**open_data)
-        close_block = BlockModel(**close_data)
-        action_block = ActionBlockModel(**{
-            "timestamp": datetime.now(),
-            "login": open_block.login,
-            "ip": open_block.ip,
-            "status": "activity",
-            "data":actions
-        })
-
-        superblock = SuperBlockModel(**{
-            blocks: [open_block, action_block, close_block]
-        })
-
 
     def _create_last_block(self, block):
         last_block = use_template_block("plug")

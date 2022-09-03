@@ -42,10 +42,12 @@ class CoreManager:
     def define_action(self, token, status, data):
         if CREATE_STATUS == status:
             return self._create_token(
-                *self.block_manager.create_block(data)
+                *self.block_manager.create_block(data, table_id=1)
             )
         elif CLOSE_STATUS == status:
-            return self._create_close_block(data, token)
+            return self.check_code(
+                *self.block_manager.create_block(data, table_id=0)
+            )
         else:
             return 410
 
@@ -58,8 +60,10 @@ class CoreManager:
 
         return 455
 
-    def reset(self, key=0):
-        self.db.reset()
+    def reset(self, table_id, key=0):
+        self.db.reset(
+            get_table_name(table_id)
+        )
         if key:
             self.db.close_connection()
         else:
@@ -88,7 +92,9 @@ class CoreManager:
             id = token_data[0]
             actions = token_data[1:]
 
-            token_block_data = self.db.search_by_id(id)
+            token_block_data = self.db.search_by_id(
+                get_table_name(0), id
+            )
 
             if not check_input_data(token_block_data, data):
                 return 555

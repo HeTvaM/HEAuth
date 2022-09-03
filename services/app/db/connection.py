@@ -42,9 +42,30 @@ class Connection(metaclass = MetaSingleton):
         except psycopg2.errors.DuplicateTable:
             pass
 
-    def add_open(self, data):
-        logger.log(f"ADD DB DATA: {data}, {table}")
+    def add(self, table_id, data):
+        logger.log(f"ADD DATA - {data}")
 
+        query = f"""
+        INSERT INTO {table} ({', '.join([key for key in data.keys()])})
+        VALUES ({', '.join([f'{{{i}}}' for i in range(len(data))])})
+        """
+
+        logger.log(f"ADD QUERY - {query}")
+
+        self.__cursor.execute(
+            query.format(
+                *[value for value in data.values()]
+            )
+        )
+
+        self.__cursor.execute(
+            GET_LAST_ID.format("open")
+        )
+
+        return self.__cursor.fetchone()[0]
+
+
+    def add_open(self, data):
         self.__cursor.execute(
             OPEN_INSERT_BLOCK.format(
                 data["login"],
@@ -79,7 +100,7 @@ class Connection(metaclass = MetaSingleton):
 
     def delete_block(self, table, id):
         self.__cursor.execute(
-            DELETE_BLOCK.format(table,id)
+            DELETE_BLOCK.format(table, id)
         )
         return True
 
