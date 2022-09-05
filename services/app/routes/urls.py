@@ -16,6 +16,7 @@ app = Flask(__name__)
 
 ExceptionMessages = {
     200: ("Access allowed", 200),
+    210: ("Action Added", 200),
     401: ("The system did not allow access", 401),
     410: ("The status is None \ The status is wrong", 401),
     444: ("Logging Error!", 401),

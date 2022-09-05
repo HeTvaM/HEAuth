@@ -16,6 +16,7 @@ from tools.config import (
     UNIQUE_KEY,
     CREATE_STATUS,
     CLOSE_STATUS,
+    CHECK_STATUS,
     OPEN_TABLE,
     CLOSE_TABLE
 )
@@ -48,6 +49,10 @@ class CoreManager:
             return self.check_code(
                 *self.block_manager.create_block(data, table_id=0)
             )
+        elif CHECK_STATUS == status:
+            return self.check_code(
+                self._find_token()
+            )
         else:
             return 410
 
@@ -56,7 +61,7 @@ class CoreManager:
 
     def add_user_action(self, token, action):
         if self._find_token(token):
-            return 200 if self._log_action(token, action) else 444
+            return 210 if self._log_action(token, action) else 444
 
         return 455
 

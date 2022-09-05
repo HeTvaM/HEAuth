@@ -1,11 +1,12 @@
 import hashlib
 
-from pydantic import BaseModel, Field, IPvAnyAddres
+from pydantic import BaseModel, Field
+from ipaddress import IPv4Address
 from datetime import datetime, time
 from typing import List, Optional, Any
 
 
-class BaseBlock:
+class BaseBlock():
     @staticmethod
     def update(cls, prev_block) -> bool:
         hash_algo = hashlib.sha512()
@@ -26,8 +27,7 @@ class BaseBlock:
 class BlockModel(BaseModel, BaseBlock):
     timestamp: datetime
     login: str = Field(min_length=3, max_length=40)
-    #ip: str = Field(min_length=7, max_length=20)
-    ip: IPvAnyAddres
+    ip: IPv4Address
     status: str
     hash: str = None
 
@@ -44,7 +44,7 @@ class ActionBlockModel(BlockModel):
 
 class CloseBlockModel(BaseModel, BaseBlock):
     login: str = Field(min_length=3, max_length=40)
-    ip: str = Field(min_length=7, max_length=20)
+    ip: IPv4Address
     open_date: datetime
     close_date: datetime
     activity: dict

@@ -6,12 +6,15 @@ from random import sample, randint
 from blocks import (
     ActionBlockModel,
     BlockModel,
-    SuperBlockModel,
+    CloseBlockModel,
     BaseBlock
 )
 
 from tools.debug_logger import Logger
-from tools.helpers import get_table_name
+from tools.helpers import (
+    get_table_name,
+    make_hash
+)
 from tools.config import (
     UNIQUE_KEY,
     SYSTEM_LOGIN,
@@ -28,8 +31,14 @@ TEMPLATE_BLOCK = BlockModel(**{
     "status": "primary"
 })
 
-TEMPLATE_SUPERBLOCK = SuperBlockModel(**{
-    "blocks": "primary"
+TEMPLATE_SUPERBLOCK = CloseBlockModel(**{
+    "login": SYSTEM_LOGIN,
+    "ip": SYSTEM_IP,
+    "open_date": datetime.now(),
+    "close_date": datetime.now(),
+    "activity": {
+        datetime.now(): "primary"
+    }
 })
 
 def use_template_block(template, status):
@@ -40,7 +49,7 @@ def use_template_block(template, status):
         return block
 
     block = TEMPLATE_SUPERBLOCK
-    block.blocks = status
+    block.close_date = datetime.now()
     return block
 
 def plugging(func):
@@ -63,7 +72,8 @@ class BlockManager:
     def init_primary_blocks(self):
         logger.log("INIT PRIMARY BLOCK")
 
-        for i in range(2):
+        for i in range(2,0,-1):
+            print(i)
             primary_block = use_template_block(i, "primary")
             primary_block.hash = make_hash(i, 1)
             self.db.add(

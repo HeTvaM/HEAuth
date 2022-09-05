@@ -42,21 +42,25 @@ class Connection(metaclass = MetaSingleton):
         except psycopg2.errors.DuplicateTable:
             pass
 
-    def add(self, table_id, data):
+    def add(self, table, data):
         logger.log(f"ADD DATA - {data}")
 
+        data.pop("hash")
+        keys = data.keys()
+
         query = f"""
-        INSERT INTO {table} ({', '.join([key for key in data.keys()])})
-        VALUES ({', '.join([f'{{{i}}}' for i in range(len(data))])})
+        INSERT INTO {table} ({', '.join([key for key in keys])})
+        VALUES ({', '.join([str(value) for value in data.values()])})
         """
 
         logger.log(f"ADD QUERY - {query}")
 
         self.__cursor.execute(
-            query.format(
-                *[value for value in data.values()]
-            )
+            query
         )
+#            query.format(
+#                *[value for value in data.values()]
+#            )
 
         self.__cursor.execute(
             GET_LAST_ID.format("open")
