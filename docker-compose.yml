@@ -12,6 +12,12 @@ services:
       - postgres
     restart: always
 
+  redis:
+    container_name: redis
+    image: redis:7.0.4
+    expose:
+      - 6379
+
   postgres:
     container_name: postgres
     image: postgres:13.3
